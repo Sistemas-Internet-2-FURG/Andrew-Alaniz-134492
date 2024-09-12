@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Escolar</title>
+</head>
+<body>
+    <h1>Turmas</h1>
+    <form action="{{ url_for('main.criar_turma') }}" method="POST">
+        <input type="text" name="codigo" placeholder="Código" required>
+        <input type="text" name="nome" placeholder="Nome" required>
+        <select name="professor_id">
+            {% for professor in professores %}
+            <option value="{{ professor.id }}">{{ professor.nome }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Adicionar Turma</button>
+    </form>
+
+    <ul>
+        {% for turma in turmas %}
+        <li>
+            {{ turma.codigo }} - {{ turma.nome }} - Professor: {{ turma.professor.nome if turma.professor else 'Nenhum' }}
+            <form action="{{ url_for('main.deletar_turma', codigo=turma.codigo) }}" method="POST" style="display:inline;">
+                <button type="submit">Excluir</button>
+            </form>
+            <a href="{{ url_for('main.editar_turma', codigo=turma.codigo) }}">Editar</a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h1>Alunos</h1>
+    <form action="{{ url_for('main.criar_aluno') }}" method="POST">
+        <input type="text" name="matricula" placeholder="Matrícula" required>
+        <input type="text" name="nome" placeholder="Nome" required>
+        <select name="turma_codigo">
+            {% for turma in turmas %}
+            <option value="{{ turma.codigo }}">{{ turma.codigo }} - {{ turma.nome }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Adicionar Aluno</button>
+    </form>
+
+    <ul>
+        {% for aluno in alunos %}
+        <li>
+            {{ aluno.matricula }} - {{ aluno.nome }} - Turma: {{ aluno.turma.codigo if aluno.turma else 'Nenhuma' }}
+            <form action="{{ url_for('main.deletar_aluno', matricula=aluno.matricula) }}" method="POST" style="display:inline;">
+                <button type="submit">Excluir</button>
+            </form>
+            <a href="{{ url_for('main.editar_aluno', matricula=aluno.matricula) }}">Editar</a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h1>Professores</h1>
+    <form action="{{ url_for('main.criar_professor') }}" method="POST">
+        <input type="text" name="nome" placeholder="Nome" required>
+        <button type="submit">Adicionar Professor</button>
+    </form>
+
+    <ul>
+        {% for professor in professores %}
+        <li>
+            {{ professor.id }} - {{ professor.nome }}
+            <form action="{{ url_for('main.deletar_professor', id=professor.id) }}" method="POST" style="display:inline;">
+                <button type="submit">Excluir</button>
+            </form>
+            <a href="{{ url_for('main.editar_professor', id=professor.id) }}">Editar</a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
