@@ -1,94 +1,56 @@
-from flask import Blueprint, render_template, request, redirect, url_for
-from models import db, Turma, Aluno, Professor
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from models import db, User, Turma, Aluno
 
-main_routes = Blueprint('main', __name__)
+api_routes = Blueprint('api', __name__)
 
-@main_routes.route('/')
-def index():
+@api_routes.route('/turmas', methods=['GET'])
+@jwt_required()
+def listar_turmas():
     turmas = Turma.query.all()
-    alunos = Aluno.query.all()
-    professores = Professor.query.all()
-    return render_template('index.html', turmas=turmas, alunos=alunos, professores=professores)
+    return jsonify([{'codigo': t.codigo, 'nome': t.nome, 'professor_id': t.professor_id} for t in turmas])
 
-# Rotas de Turma
-@main_routes.route('/criar_turma', methods=['POST'])
+@api_routes.route('/criar_turma', methods=['POST'])
+@jwt_required()
 def criar_turma():
-    codigo = request.form['codigo']
-    nome = request.form['nome']
-    professor_id = request.form['professor_id']
-    nova_turma = Turma(codigo=codigo, nome=nome, professor_id=professor_id)
-    db.session.add(nova_turma)
-    db.session.commit()
-    return redirect(url_for('main.index'))
+    current_user = get_jwt_identity()
+    if current_user['role'] != 'professor':
+        return jsonify(message="Acesso negado"), 403
 
-@main_routes.route('/deletar_turma/<string:codigo>', methods=['POST'])
+    data = request.json
+    turma = Turma(codigo=data['codigo'], nome=data['nome'], professor_id=current_user['id'])
+    db.session.add(turma)
+    db.session.commit()
+    return jsonify(message="Turma criada")
+
+@api_routes.route('/criar_aluno', methods=['POST'])
+@jwt_required()
+def criar_aluno():
+    data = request.json
+    aluno = Aluno(matricula=data['matricula'], nome=data['nome'])
+    db.session.add(aluno)
+    db.session.commit()
+    return jsonify(message="Aluno criado")
+
+@api_routes.route('/matricular', methods=['POST'])
+@jwt_required()
+def matricular():
+    current_user = get_jwt_identity()
+    if current_user['role'] != 'aluno':
+        return jsonify(message="Acesso negado"), 403
+
+    data = request.json
+    aluno = Aluno.query.filter_by(matricula=current_user['id']).first()
+    if aluno:
+        aluno.turma_codigo = data['turma_codigo']
+        db.session.commit()
+        return jsonify(message="Aluno matriculado")
+    return jsonify(message="Aluno não encontrado"), 404
+
+@api_routes.route('/deletar_turma/<codigo>', methods=['DELETE'])
+@jwt_required()
 def deletar_turma(codigo):
     turma = Turma.query.get_or_404(codigo)
     db.session.delete(turma)
     db.session.commit()
-    return redirect(url_for('main.index'))
-
-@main_routes.route('/editar_turma/<string:codigo>', methods=['GET', 'POST'])
-def editar_turma(codigo):
-    turma = Turma.query.get_or_404(codigo)
-    if request.method == 'POST':
-        turma.nome = request.form['nome']
-        turma.professor_id = request.form['professor_id']
-        db.session.commit()
-        return redirect(url_for('main.index'))
-    professores = Professor.query.all()
-    return render_template('editar_turma.html', turma=turma, professores=professores)
-
-# Rotas de Aluno
-@main_routes.route('/criar_aluno', methods=['POST'])
-def criar_aluno():
-    matricula = request.form['matricula']
-    nome = request.form['nome']
-    turma_codigo = request.form['turma_codigo']
-    novo_aluno = Aluno(matricula=matricula, nome=nome, turma_codigo=turma_codigo)
-    db.session.add(novo_aluno)
-    db.session.commit()
-    return redirect(url_for('main.index'))
-
-@main_routes.route('/deletar_aluno/<string:matricula>', methods=['POST'])
-def deletar_aluno(matricula):
-    aluno = Aluno.query.get_or_404(matricula)
-    db.session.delete(aluno)
-    db.session.commit()
-    return redirect(url_for('main.index'))
-
-@main_routes.route('/editar_aluno/<string:matricula>', methods=['GET', 'POST'])
-def editar_aluno(matricula):
-    aluno = Aluno.query.get_or_404(matricula)
-    if request.method == 'POST':
-        aluno.nome = request.form['nome']
-        aluno.turma_codigo = request.form['turma_codigo']
-        db.session.commit()
-        return redirect(url_for('main.index'))
-    turmas = Turma.query.all()
-    return render_template('editar_aluno.html', aluno=aluno, turmas=turmas)
-
-# Rotas de Professor
-@main_routes.route('/criar_professor', methods=['POST'])
-def criar_professor():
-    nome = request.form['nome']
-    novo_professor = Professor(nome=nome)
-    db.session.add(novo_professor)
-    db.session.commit()
-    return redirect(url_for('main.index'))
-
-@main_routes.route('/deletar_professor/<int:id>', methods=['POST'])
-def deletar_professor(id):
-    professor = Professor.query.get_or_404(id)
-    db.session.delete(professor)
-    db.session.commit()
-    return redirect(url_for('main.index'))
-
-@main_routes.route('/editar_professor/<int:id>', methods=['GET', 'POST'])
-def editar_professor(id):
-    professor = Professor.query.get_or_404(id)
-    if request.method == 'POST':
-        professor.nome = request.form['nome']
-        db.session.commit()
-        return redirect(url_for('main.index'))
-    return render_template('editar_professor.html', professor=professor)
+    return jsonify(message="Turma deletada")

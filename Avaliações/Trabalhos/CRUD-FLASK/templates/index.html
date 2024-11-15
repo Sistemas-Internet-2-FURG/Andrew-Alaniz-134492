@@ -4,72 +4,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRUD Escolar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Turmas</h1>
-    <form action="{{ url_for('main.criar_turma') }}" method="POST">
-        <input type="text" name="codigo" placeholder="Código" required>
-        <input type="text" name="nome" placeholder="Nome" required>
-        <select name="professor_id">
-            {% for professor in professores %}
-            <option value="{{ professor.id }}">{{ professor.nome }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Adicionar Turma</button>
-    </form>
+    <div class="container my-4">
+        <h1 class="text-center">Sistema de Gestão Escolar</h1>
+        
+        <!-- Turmas -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2>Turmas</h2>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('main.criar_turma') }}" method="POST" class="row g-3">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" name="codigo" placeholder="Código" required>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" name="nome" placeholder="Nome" required>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="professor_id">
+                            {% for professor in professores %}
+                            <option value="{{ professor.id }}">{{ professor.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="submit" class="btn btn-primary w-100">Adicionar</button>
+                    </div>
+                </form>
 
-    <ul>
-        {% for turma in turmas %}
-        <li>
-            {{ turma.codigo }} - {{ turma.nome }} - Professor: {{ turma.professor.nome if turma.professor else 'Nenhum' }}
-            <form action="{{ url_for('main.deletar_turma', codigo=turma.codigo) }}" method="POST" style="display:inline;">
-                <button type="submit">Excluir</button>
-            </form>
-            <a href="{{ url_for('main.editar_turma', codigo=turma.codigo) }}">Editar</a>
-        </li>
-        {% endfor %}
-    </ul>
+                <ul class="list-group mt-3">
+                    {% for turma in turmas %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ turma.codigo }} - {{ turma.nome }} - Professor: {{ turma.professor.nome if turma.professor else 'Nenhum' }}
+                        <div>
+                            <form action="{{ url_for('main.deletar_turma', codigo=turma.codigo) }}" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                            </form>
+                            <a href="{{ url_for('main.editar_turma', codigo=turma.codigo) }}" class="btn btn-secondary btn-sm">Editar</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
 
-    <h1>Alunos</h1>
-    <form action="{{ url_for('main.criar_aluno') }}" method="POST">
-        <input type="text" name="matricula" placeholder="Matrícula" required>
-        <input type="text" name="nome" placeholder="Nome" required>
-        <select name="turma_codigo">
-            {% for turma in turmas %}
-            <option value="{{ turma.codigo }}">{{ turma.codigo }} - {{ turma.nome }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Adicionar Aluno</button>
-    </form>
+        <!-- Alunos -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2>Alunos</h2>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('main.criar_aluno') }}" method="POST" class="row g-3">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" name="matricula" placeholder="Matrícula" required>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" name="nome" placeholder="Nome" required>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="turma_codigo">
+                            {% for turma in turmas %}
+                            <option value="{{ turma.codigo }}">{{ turma.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="submit" class="btn btn-primary w-100">Adicionar</button>
+                    </div>
+                </form>
 
-    <ul>
-        {% for aluno in alunos %}
-        <li>
-            {{ aluno.matricula }} - {{ aluno.nome }} - Turma: {{ aluno.turma.codigo if aluno.turma else 'Nenhuma' }}
-            <form action="{{ url_for('main.deletar_aluno', matricula=aluno.matricula) }}" method="POST" style="display:inline;">
-                <button type="submit">Excluir</button>
-            </form>
-            <a href="{{ url_for('main.editar_aluno', matricula=aluno.matricula) }}">Editar</a>
-        </li>
-        {% endfor %}
-    </ul>
+                <ul class="list-group mt-3">
+                    {% for aluno in alunos %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ aluno.matricula }} - {{ aluno.nome }} - Turma: {{ aluno.turma.nome if aluno.turma else 'Nenhuma' }}
+                        <div>
+                            <form action="{{ url_for('main.deletar_aluno', matricula=aluno.matricula) }}" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                            </form>
+                            <a href="{{ url_for('main.editar_aluno', matricula=aluno.matricula) }}" class="btn btn-secondary btn-sm">Editar</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
 
-    <h1>Professores</h1>
-    <form action="{{ url_for('main.criar_professor') }}" method="POST">
-        <input type="text" name="nome" placeholder="Nome" required>
-        <button type="submit">Adicionar Professor</button>
-    </form>
+        <!-- Professores -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2>Professores</h2>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('main.criar_professor') }}" method="POST" class="row g-3">
+                    <div class="col-md-11">
+                        <input type="text" class="form-control" name="nome" placeholder="Nome do Professor" required>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="submit" class="btn btn-primary w-100">Adicionar</button>
+                    </div>
+                </form>
 
-    <ul>
-        {% for professor in professores %}
-        <li>
-            {{ professor.id }} - {{ professor.nome }}
-            <form action="{{ url_for('main.deletar_professor', id=professor.id) }}" method="POST" style="display:inline;">
-                <button type="submit">Excluir</button>
-            </form>
-            <a href="{{ url_for('main.editar_professor', id=professor.id) }}">Editar</a>
-        </li>
-        {% endfor %}
-    </ul>
+                <ul class="list-group mt-3">
+                    {% for professor in professores %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ professor.id }} - {{ professor.nome }}
+                        <div>
+                            <form action="{{ url_for('main.deletar_professor', id=professor.id) }}" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                            </form>
+                            <a href="{{ url_for('main.editar_professor', id=professor.id) }}" class="btn btn-secondary btn-sm">Editar</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
