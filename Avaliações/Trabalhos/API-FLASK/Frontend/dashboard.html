@@ -1,0 +1,59 @@
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="dashboard">
+        <header>
+            <h1>Bem-vindo ao Dashboard</h1>
+            <button id="logoutBtn">Sair</button>
+        </header>
+        <main>
+            <section id="actions">
+                <div id="professorPanel" class="panel">
+                    <h2>Criar Turma</h2>
+                    <form id="createTurmaForm">
+                        <label for="turmaNome">Nome da Turma:</label>
+                        <input type="text" id="turmaNome" required>
+                        <label for="turmaCodigo">Código da Turma:</label>
+                        <input type="text" id="turmaCodigo" required>
+                        <button type="submit">Criar Turma</button>
+                    </form>
+                </div>
+                <div id="alunoPanel" class="panel hidden">
+                    <h2>Entrar na Turma</h2>
+                    <form id="enterTurmaForm">
+                        <label for="turmaCodigoAluno">Código da Turma:</label>
+                        <input type="text" id="turmaCodigoAluno" required>
+                        <button type="submit">Entrar na Turma</button>
+                    </form>
+                </div>
+            </section>
+            <section id="lists">
+                <div id="turmasList" class="list">
+                    <h3>Turmas</h3>
+                    <ul>
+                        <!-- Turmas serão adicionadas aqui dinamicamente -->
+                    </ul>
+                </div>
+                <div id="professoresList" class="list">
+                    <h3>Professores</h3>
+                    <ul>
+                        <!-- Professores serão adicionados aqui dinamicamente -->
+                    </ul>
+                </div>
+                <div id="alunosList" class="list">
+                    <h3>Alunos</h3>
+                    <ul>
+                        <!-- Alunos serão adicionados aqui dinamicamente -->
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
