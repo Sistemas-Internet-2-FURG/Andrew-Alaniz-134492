@@ -1,0 +1,12 @@
+{
+    "turmas": [
+      { "id": 1, "nome": "Turma A", "quantidade_alunos": 1 },
+      { "id": 2, "nome": "Turma B", "quantidade_alunos": 1 }
+    ],
+    "alunos": [
+      { "id": 1, "nome": "João Silva", "turma": "Turma A" },
+      { "id": 2, "nome": "Maria Oliveira", "turma": "Turma B" },
+      { "id": 3, "nome": "Denner", "turma": "Turma C" }
+    ]
+  }
+  
